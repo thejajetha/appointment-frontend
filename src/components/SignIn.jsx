@@ -1,16 +1,20 @@
 import React, { useState } from 'react'
 import { getTokenApi } from '../services/Api'
+import { useNavigate } from 'react-router-dom'
 
 function SignIn() {
 
     const [user,setUser]=useState({username:"",password:""})
+    const navigate=useNavigate()
 
     async function handleSubmit(event){
         event.preventDefault()
         let response=await getTokenApi(user)
         if (response.status>=200 && response.status<300){
             console.log(response.data);
-            
+            let authToken="Token "+response.data.token
+            localStorage.setItem("token",authToken)
+            navigate("appointment-create")
         }
     }
 
