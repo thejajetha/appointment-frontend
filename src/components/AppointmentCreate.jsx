@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { createAppointmentApi, getAvailableSlotApi } from '../services/Api';
 
 function AppointmentCreate() {
 
@@ -21,12 +22,35 @@ function AppointmentCreate() {
 
     const [appointment,setAppointment]=useState({name:"",phone_number:"",date:"",time_slot:null})
 
-    function handleSubmit(event){
+    const [availableSlots,setAvailableSlots]=useState(null)
+
+    async function handleSubmit(event){
         event.preventDefault()
         console.log(appointment);
-        
+        let response=await createAppointmentApi(appointment)
+        if (response.status>=200 && response.status<300){
+            console.log(response.data);  
+        }
+        else{
+            console.log("failed"+response);
+            
+        }
     }
 
+    async function handleDateChange(event){
+        event.preventDefault()
+        console.log(event.target.value);
+        let selectedDate=event.target.value
+        let response=await getAvailableSlotApi(selectedDate)
+        if (response.status>=200 && response.status<300){
+            console.log(response.data);
+            setAvailableSlots(response.data)
+        }
+        else{
+            console.log("failed"+response);
+            
+        }
+    }
   return (
     <div class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
     <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
@@ -43,7 +67,10 @@ function AppointmentCreate() {
                 <label for="appointmentDate" class="block text-sm font-medium text-gray-700 mb-1">Select Date</label>
                 <input 
                 value={appointment.date}
-                onChange={(e)=>setAppointment({...appointment,date:e.target.value})}
+                onChange={(e)=>{
+                    setAppointment({...appointment,date:e.target.value});
+                    handleDateChange(e)
+                }}
                 type="date" id="appointmentDate" name="appointmentDate" 
                        class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
                        required/>
@@ -59,7 +86,7 @@ function AppointmentCreate() {
                         class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
                         required>
                     <option value="" disabled selected>Choose a time slot</option>
-                    {TIME_SLOT_CHOICES.map((ch)=><option value={ch[0]}>{ch[1]}</option>)}
+                    {availableSlots&&availableSlots.map((ch)=><option value={ch.slot_id}>{ch.slot_display}</option>)}
                 </select>
             </div>
 
