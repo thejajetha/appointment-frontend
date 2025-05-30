@@ -20,3 +20,9 @@ export async function createAppointmentApi(data){
 export async function getAvailableSlotApi(date){
     return await axios.get(`http://127.0.0.1:8000/api/appointments/slots/?date=${date}`)
 }
+
+export async function appointmentListApi(){
+    let token=localStorage.getItem("token")
+    let headers={Authorization:token}
+    return await axios.get("http://127.0.0.1:8000/api/appointments/",{headers})
+}

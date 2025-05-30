@@ -1,7 +1,10 @@
 import React, { useState } from 'react'
 import { createAppointmentApi, getAvailableSlotApi } from '../services/Api';
+import { useNavigate } from 'react-router-dom';
 
 function AppointmentCreate() {
+
+    const navigate=useNavigate()
 
     const TIME_SLOT_CHOICES = [
 
@@ -29,7 +32,8 @@ function AppointmentCreate() {
         console.log(appointment);
         let response=await createAppointmentApi(appointment)
         if (response.status>=200 && response.status<300){
-            console.log(response.data);  
+            console.log(response.data);
+            navigate("/appointment-all")
         }
         else{
             console.log("failed"+response);
